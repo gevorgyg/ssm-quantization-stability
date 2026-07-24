@@ -1,0 +1,33 @@
+[project]
+name = "ssm-quantization-stability"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "einops>=0.8.2",
+    "matplotlib>=3.11.0",
+    "numpy>=2.4.6",
+    "opt-einsum>=3.4.0",
+    "pytorch-lightning>=2.6.5",
+    "scipy>=1.17.1",
+    "torch>=2.12.1",
+    "torchvision>=0.27.1",
+    "tqdm>=4.68.3",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.3.0",
+    "jupyterlab>=4.6.1",
+    "jupyterlab-vim>=4.1.4",
+    "jupytext>=1.19.4",
+]
+
+[tool.pyright]
+typeCheckingMode = "basic"
+reportPrivateImportUsage = false
+reportAttributeAccessIssue = false
+reportOperatorIssue = false      # tensor operator overloads Pyright can't see
+reportOptionalOperand = false    # (dA - 1.)/A etc. where A is inferred Optional
+extraPaths = ["s4"]

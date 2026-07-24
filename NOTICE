@@ -1,0 +1,41 @@
+This project (ssm-quantization-stability) is licensed under the MIT License
+(see LICENSE).
+
+It incorporates and adapts code from the S4 repository:
+
+    state-spaces (S4 / S4D)
+    https://github.com/state-spaces/s4
+    Copyright (c) Albert Gu, Karan Goel, Christopher Ré, and contributors
+    Licensed under the Apache License, Version 2.0.
+
+The full Apache-2.0 license text is retained at s4/LICENSE. The vendored source
+lives unmodified under s4/.
+
+Portions of explore.py derive from that source, at varying degrees of fidelity:
+
+  - S4Model                          — TAKEN NEAR-VERBATIM from s4/example.py
+                                       (S4Model). Lightly modified only: comments
+                                       stripped, lines condensed, dropout_fn
+                                       hardcoded to nn.Dropout1d, lr and default
+                                       hyperparameters changed. Forward logic is
+                                       line-for-line the original.
+  - SSMLayer conv branch             — the FFT convolution (rfft/irfft) is taken
+                                       near-verbatim from s4/models/s4/s4d.py
+                                       (S4D.forward); the kernel is rebuilt from
+                                       explicit dA/dB/dC (adapted).
+  - discretize()                     — ADAPTED: the ZOH expressions are from
+                                       s4/models/s4/s4d.py (S4DKernel.forward),
+                                       restructured to return dA, dB, dC as
+                                       separate tensors instead of folding them
+                                       into the convolution kernel.
+  - SSMLayer recurrent branch        — ADAPTED: the diagonal step recurrence
+                                       (state = dA*state + dB*u; y = 2*Re(dC*state))
+                                       derives from s4/models/s4/s4.py
+                                       (SSMKernelDiag.step); the surrounding
+                                       quantization / clamp / error-feedback /
+                                       diagnostics code is original.
+
+Significant change from the original: the discrete state-space matrices
+(dA, dB, dC) are kept as explicit tensors and quantized per-forward, rather than
+being folded directly into the convolution kernel, to enable quantization of the
+recurrent state and the state matrix.
